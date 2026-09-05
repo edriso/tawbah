@@ -154,7 +154,7 @@ test("blocked storage does not prevent a complete session", () => {
   app.close();
 });
 
-test("spoken reminders respect interval, mute and pause; only natural completion chimes", async () => {
+test("spoken reminders respect interval, mute and pause; only natural completion plays the message pop", async () => {
   let tones = 0;
   let voices = 0;
   let stopped = 0;
@@ -163,8 +163,8 @@ test("spoken reminders respect interval, mute and pause; only natural completion
     currentTime = 0;
     destination = {};
     async resume() {}
-    async decodeAudioData() {
-      return {};
+    async decodeAudioData(buffer) {
+      return buffer;
     }
     createBufferSource() {
       return {
@@ -172,22 +172,12 @@ test("spoken reminders respect interval, mute and pause; only natural completion
         connect() {},
         disconnect() {},
         start() {
-          voices++;
+          if (this.buffer.endsWith("/completion-pop.mp3")) tones++;
+          else voices++;
         },
         stop() {
           stopped++;
         },
-      };
-    }
-    createOscillator() {
-      return {
-        frequency: {},
-        connect() {},
-        disconnect() {},
-        start() {
-          tones++;
-        },
-        stop() {},
       };
     }
     createGain() {
@@ -203,6 +193,7 @@ test("spoken reminders respect interval, mute and pause; only natural completion
     }
   }
   const app = setup({ audioMock: AudioMock });
+  app.w.fetch = async (url) => ({ ok: true, arrayBuffer: async () => url });
   const settle = () => new Promise((resolve) => setImmediate(resolve));
   app.get("sound").click();
   await settle();
@@ -231,14 +222,14 @@ test("spoken reminders respect interval, mute and pause; only natural completion
   app.get("completion-sound").click();
   await settle();
   app.advance(300000);
-  assert.equal(tones, 4);
+  assert.equal(tones, 1);
   app.advance(500);
-  assert.equal(tones, 4);
+  assert.equal(tones, 1);
   app.get("restart").click();
   app.get("start").click();
   await settle();
   app.get("finish").click();
-  assert.equal(tones, 4);
+  assert.equal(tones, 1);
   // The end chime works without spoken reminders or fetching the recording.
   app.get("sound").click();
   app.w.fetch = async () => {
@@ -248,17 +239,17 @@ test("spoken reminders respect interval, mute and pause; only natural completion
   app.get("start").click();
   await settle();
   app.advance(300000);
-  assert.equal(tones, 8);
+  assert.equal(tones, 2);
   app.get("completion-sound").click();
   assert.equal(app.w.localStorage.getItem("tawbah-completion-sound"), "false");
   app.get("restart").click();
   app.get("start").click();
   await settle();
   app.advance(300000);
-  assert.equal(tones, 8);
+  assert.equal(tones, 2);
   app.get("preview-chime").click();
   await settle();
-  assert.equal(tones, 12);
+  assert.equal(tones, 3);
   assert.equal(
     app.get("completion-sound").getAttribute("aria-checked"),
     "false",

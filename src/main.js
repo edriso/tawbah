@@ -71,7 +71,11 @@ let audio;
 let voiceChoice = read("tawbah-voice") === "short" ? "short" : "bader";
 const voiceBuffers = new Map();
 const voiceLoads = new Map();
-const voiceFiles = { bader: $("voice-bader").src, short: $("voice-file").src };
+const voiceFiles = {
+  bader: $("voice-bader").src,
+  short: $("voice-file").src,
+  completion: $("completion-file").src,
+};
 function updateVoiceChoice() {
   $("voice").value = voiceChoice;
   $("credit-short").hidden = voiceChoice !== "short";
@@ -85,8 +89,7 @@ function stopVoice() {
     voiceNode = null;
   }
 }
-function loadVoice() {
-  const choice = voiceChoice;
+function loadVoice(choice = voiceChoice) {
   if (voiceBuffers.has(choice)) return Promise.resolve();
   if (!voiceLoads.has(choice)) {
     const loading = fetch(voiceFiles[choice])
@@ -130,7 +133,10 @@ async function unlockAudio(withVoice = true) {
   try {
     audio ??= new (window.AudioContext || window.webkitAudioContext)();
     await audio.resume();
-    if (withVoice) await loadVoice();
+    await Promise.all([
+      ...(withVoice ? [loadVoice()] : []),
+      ...(completionSound || !withVoice ? [loadVoice("completion")] : []),
+    ]);
     $("audio-error").hidden = audio.state === "running";
     return audio.state === "running";
   } catch {
@@ -138,26 +144,30 @@ async function unlockAudio(withVoice = true) {
     return false;
   }
 }
+let completionNode;
+function stopCompletionSound() {
+  if (completionNode) {
+    completionNode.stop();
+    completionNode = null;
+  }
+}
 function chime() {
-  if (!audio || audio.state !== "running") return;
-  const now = audio.currentTime;
-  [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
-    const start = now + index * 0.13;
-    const oscillator = audio.createOscillator();
-    const gain = audio.createGain();
-    oscillator.frequency.value = frequency;
-    gain.gain.setValueAtTime(0, start);
-    gain.gain.linearRampToValueAtTime(0.065, start + 0.03);
-    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.8);
-    oscillator.connect(gain);
-    gain.connect(audio.destination);
-    oscillator.start(start);
-    oscillator.stop(start + 0.9);
-    oscillator.onended = () => {
-      oscillator.disconnect();
-      gain.disconnect();
-    };
-  });
+  const buffer = voiceBuffers.get("completion");
+  if (!buffer || !audio || audio.state !== "running") return;
+  stopCompletionSound();
+  const node = audio.createBufferSource();
+  const gain = audio.createGain();
+  node.buffer = buffer;
+  gain.gain.value = 0.6;
+  node.connect(gain);
+  gain.connect(audio.destination);
+  completionNode = node;
+  node.onended = () => {
+    node.disconnect();
+    gain.disconnect();
+    if (completionNode === node) completionNode = null;
+  };
+  node.start();
 }
 function updateSound() {
   $("sound").setAttribute("aria-checked", String(sound));
@@ -180,6 +190,7 @@ $("completion-sound").onclick = () => {
   $("completion-sound").setAttribute("aria-checked", String(completionSound));
   save("tawbah-completion-sound", String(completionSound));
   if (completionSound) void unlockAudio(false);
+  else stopCompletionSound();
 };
 $("preview-chime").onclick = async () => {
   if (await unlockAudio(false)) chime();
