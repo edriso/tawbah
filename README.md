@@ -18,7 +18,7 @@ A quiet Arabic app for istighfar (seeking forgiveness).
 
 Settings are saved on your device when storage is available. Audio, fonts, and images are hosted with the app. Refreshing starts a new session. Browsers may suspend audio when the phone is locked or the page is in the background; the timer still catches up, without replaying missed reminders.
 
-The mountain is symbolic, not a count of sins or a measure of forgiveness. It keeps 45% of its original height at the end of a session.
+The mountain is symbolic, not a count of sins or a measure of forgiveness. It eases gently through the full selected session, retaining about 95% of its height after the first quarter, 85% halfway through, and at least 70% at the end. The same pacing applies to every duration, and pausing freezes the mountain.
 
 ## Run locally
 

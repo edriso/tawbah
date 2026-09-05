@@ -97,7 +97,7 @@ test("complete user flow: select duration, start, hide setup, pause, resume, fin
   get("start").click();
   app.advance(600000);
   assert.equal(get("done-label").textContent, "اكتملت جلستك");
-  assert.equal(get("mountain").style.getPropertyValue("--scale"), "0.45");
+  assert.equal(get("mountain").style.getPropertyValue("--scale"), "0.7");
   app.close();
 });
 test("theme and sound controls persist preferences; unavailable audio fails without blocking sessions", async () => {

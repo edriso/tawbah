@@ -8,7 +8,7 @@ test("wall-clock time catches up after background throttling, completes once, an
   s.tick(601000);
   assert.equal(s.state, "done");
   assert.equal(s.remaining(601000), 0);
-  assert.equal(s.scale(601000), 0.45);
+  assert.equal(s.scale(601000), 0.7);
   assert.equal(s.progress(601000), 1);
   s.tick(901000);
   assert.equal(s.elapsed, 300000);
@@ -46,4 +46,37 @@ test("10/20/30 second reminders fire once per boundary, without catch-up bursts"
     });
     assert.equal(reminderDue(interval * 5000 + 250, interval, 5).due, false);
   }
+});
+
+test("mountain recedes gently over every session duration and always retains 70% height", () => {
+  for (const minutes of [5, 10, 15, 30]) {
+    const session = new Session();
+    const start = 1000;
+    const duration = minutes * 60000;
+    session.start(minutes, start);
+    assert.equal(session.scale(start), 1);
+    assert.ok(session.scale(start + duration * 0.25) > 0.95);
+    assert.equal(session.scale(start + duration * 0.5), 0.85);
+    let previous = 1;
+    for (let part = 0; part <= 100; part++) {
+      const scale = session.scale(start + (duration * part) / 100);
+      assert.ok(scale <= previous && scale >= 0.7);
+      previous = scale;
+    }
+    session.tick(start + duration);
+    assert.equal(session.scale(start + duration), 0.7);
+    assert.equal(session.scale(start + duration * 10), 0.7);
+  }
+});
+
+test("pause and early finish preserve the mountain at the same point in its easing curve", () => {
+  const session = new Session();
+  session.start(15, 0);
+  session.pause(225000);
+  const scale = session.scale(225000);
+  assert.equal(session.scale(1000000), scale);
+  session.resume(1000000);
+  assert.equal(session.scale(1000000), scale);
+  session.finish(1225000);
+  assert.equal(session.scale(9999999), 0.85);
 });

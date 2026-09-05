@@ -41,7 +41,11 @@ export class Session {
     return this.duration ? this.current(now) / this.duration : 0;
   }
   scale(now) {
-    return Math.max(0.45, 1 - this.progress(now) * 0.55);
+    // Ease gently into and out of the change over the chosen session duration.
+    // Retain 70% of the peak, including after completion or a background catch-up.
+    const progress = this.progress(now);
+    const eased = progress * progress * (3 - 2 * progress);
+    return Math.max(0.7, 1 - eased * 0.3);
   }
   remaining(now) {
     return Math.max(0, Math.ceil((this.duration - this.current(now)) / 1000));

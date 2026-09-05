@@ -250,7 +250,7 @@ function render() {
   $("mountain").style.setProperty("--scale", session.scale(now));
   $("mountain").style.setProperty(
     "--width-scale",
-    1 - session.progress(now) * 0.16,
+    1 - (1 - session.scale(now)) * 0.2,
   );
 }
 function complete(natural) {
