@@ -123,12 +123,26 @@ test("theme and sound controls persist preferences; unavailable audio fails with
 test("footer alternates on refresh and uses the exact verified verse", () => {
   const first = setup({ previousQuote: "1" });
   assert.equal(first.get("quote").textContent, ayah.text);
+  assert.equal(first.get("quote-open").textContent, "﴿ ");
+  assert.equal(first.get("quote-close").textContent, " ﴾");
+  assert.equal(
+    first.get("quote-source").textContent,
+    "سورة آل عمران · الآية ١٣٥",
+  );
   assert.equal(first.get("quote-source").href, ayah.source);
   first.close();
   const second = setup({ previousQuote: "0" });
   assert.equal(
     second.get("quote-source").href,
     "https://sunnah.com/muslim:2702b",
+  );
+  assert.equal(
+    second.get("quote-label").textContent,
+    "قال رسول الله صلى الله عليه وسلم",
+  );
+  assert.equal(
+    second.get("quote-source").textContent,
+    "عن الأغر المزني رضي الله عنه · صحيح مسلم ٢٧٠٢",
   );
   second.close();
 });
@@ -251,7 +265,7 @@ test("spoken reminders respect interval, mute and pause; only natural completion
   );
   app.close();
 });
-test("settings opens and closes with focus returned; footer contains only the linked passage", () => {
+test("settings opens and closes with focus returned; passage attribution and repeated phrase remain visible", () => {
   const app = setup();
   assert.equal(
     app.w.document.querySelector(".wordmark").textContent.trim(),
@@ -262,9 +276,12 @@ test("settings opens and closes with focus returned; footer contains only the li
   app.get("settings-close").click();
   assert.equal(app.get("settings").open, false);
   assert.equal(app.w.document.activeElement.id, "settings-open");
+  assert.ok(
+    app.w.document.querySelector("footer").contains(app.get("quote-source")),
+  );
   assert.equal(
-    app.w.document.querySelector("footer").textContent.trim(),
-    app.get("quote").textContent,
+    app.w.document.querySelector(".subtitle").textContent.trim(),
+    "أستغفر اللهوأتوب إليه",
   );
   assert.equal(app.get("settings").contains(app.get("theme")), true);
   assert.equal(app.get("settings").contains(app.get("sound")), true);

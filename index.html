@@ -54,7 +54,9 @@
       <div class="intro">
         <p class="sr-only" id="eyebrow">لحظاتٌ لذكر الله</p>
         <h1>أستغفر الله<span>وأتوب إليه</span></h1>
-        <p class="sr-only" id="subtitle">اترك ما حولك قليلًا، وأقبل بقلبك.</p>
+        <p class="subtitle" aria-hidden="true">
+          أستغفر الله<span>وأتوب إليه</span>
+        </p>
       </div>
       <div class="landscape" aria-hidden="true">
         <div class="distant distant-right"></div>
@@ -132,11 +134,17 @@
       </section>
     </main>
     <footer>
+      <p id="quote-label" class="quote-label"></p>
       <blockquote>
-        <a id="quote-source" target="_blank" rel="noopener noreferrer"
-          ><span id="quote"></span
-        ></a>
+        <span id="quote-open" aria-hidden="true"></span><span id="quote"></span
+        ><span id="quote-close" aria-hidden="true"></span>
       </blockquote>
+      <a
+        id="quote-source"
+        class="quote-reference"
+        target="_blank"
+        rel="noopener noreferrer"
+      ></a>
     </footer>
     <dialog id="settings" aria-labelledby="settings-title">
       <div class="settings-heading">

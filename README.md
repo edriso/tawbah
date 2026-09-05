@@ -13,7 +13,7 @@ A quiet Arabic app for istighfar (seeking forgiveness).
 - A full-height layout for phones and desktops, with light and dark themes.
 - Optional spoken “أستغفر الله” reminders every 10, 20, or 30 seconds.
 - A separate, optional four-note chime when the timer finishes. Both sounds have preview buttons in settings. Ending a session early does not play the chime.
-- A footer that alternates between Quran 3:135 and Sahih Muslim 2702b on refresh.
+- A footer that alternates between Quran 3:135, framed by ﴿ ﴾ with its surah reference, and Sahih Muslim 2702b, with the narrator and collection shown.
 - Keyboard controls and support for reduced motion. No accounts or analytics.
 
 Settings are saved on your device when storage is available. Audio, fonts, and images are hosted with the app. Refreshing starts a new session. Browsers may suspend audio when the phone is locked or the page is in the background; the timer still catches up, without replaying missed reminders.

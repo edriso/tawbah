@@ -192,17 +192,21 @@ const quote =
     ? {
         label: "من القرآن الكريم",
         text: ayah.text,
-        reference: "آل عمران · ١٣٥",
+        reference: "سورة آل عمران · الآية ١٣٥",
         url: ayah.source,
       }
     : {
         label: "قال رسول الله صلى الله عليه وسلم",
         text: "يَا أَيُّهَا النَّاسُ تُوبُوا إِلَى اللَّهِ فَإِنِّي أَتُوبُ فِي الْيَوْمِ إِلَيْهِ مِائَةَ مَرَّةٍ",
-        reference: "صحيح مسلم · ٢٧٠٢",
+        reference: "عن الأغر المزني رضي الله عنه · صحيح مسلم ٢٧٠٢",
         url: "https://sunnah.com/muslim:2702b",
       };
 
+$("quote-label").textContent = quote.label;
+$("quote-open").textContent = quoteIndex === 0 ? "﴿ " : "« ";
+$("quote-close").textContent = quoteIndex === 0 ? " ﴾" : " »";
 $("quote").textContent = quote.text;
+$("quote-source").textContent = quote.reference;
 $("quote-source").setAttribute(
   "aria-label",
   `${quote.label} · ${quote.reference}: ${quote.text}`,
@@ -273,7 +277,6 @@ $("start").onclick = () => {
   $("pause").textContent = "إيقاف مؤقت";
   $("session-label").textContent = "وقت للذكر";
   $("eyebrow").textContent = "أقبل بقلبك";
-  $("subtitle").textContent = "أستغفر الله، وأتوب إليه.";
   transitionTimer = setTimeout(() => {
     $("setup").hidden = true;
   }, 450);
@@ -315,7 +318,6 @@ $("restart").onclick = () => {
   $("mountain").style.setProperty("--scale", 1);
   $("mountain").style.setProperty("--width-scale", 1);
   $("eyebrow").textContent = "لحظاتٌ لذكر الله";
-  $("subtitle").textContent = "اترك ما حولك قليلًا، وأقبل بقلبك.";
   $("start").focus({ preventScroll: true });
 };
 document.addEventListener("visibilitychange", () => {
