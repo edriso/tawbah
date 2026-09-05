@@ -64,10 +64,54 @@ if (["5", "10", "15", "30"].includes(duration))
   document.querySelector(`input[value="${duration}"]`).checked = true;
 $("interval").value = interval;
 let audio;
+let voiceBuffer;
+let voiceLoading;
+let voiceNode;
+function stopVoice() {
+  if (voiceNode) {
+    voiceNode.stop();
+    voiceNode = null;
+  }
+}
+function loadVoice() {
+  voiceLoading ??= fetch($("voice-file").src)
+    .then((response) => {
+      if (!response.ok) throw new Error("Audio unavailable");
+      return response.arrayBuffer();
+    })
+    .then((buffer) => audio.decodeAudioData(buffer))
+    .then((buffer) => {
+      voiceBuffer = buffer;
+    })
+    .catch((error) => {
+      voiceLoading = null;
+      throw error;
+    });
+  return voiceLoading;
+}
+function playVoice() {
+  if (!voiceBuffer || !audio || audio.state !== "running") return;
+  stopVoice();
+  const node = audio.createBufferSource();
+  const gain = audio.createGain();
+  node.buffer = voiceBuffer;
+  gain.gain.value = 0.75;
+  node.connect(gain);
+  gain.connect(audio.destination);
+  voiceNode = node;
+  node.onended = () => {
+    node.disconnect();
+    gain.disconnect();
+    if (voiceNode === node) voiceNode = null;
+  };
+  node.start();
+}
+
 async function unlockAudio() {
   try {
     audio ??= new (window.AudioContext || window.webkitAudioContext)();
     await audio.resume();
+    await loadVoice();
     $("audio-error").hidden = audio.state === "running";
     return audio.state === "running";
   } catch {
@@ -98,8 +142,7 @@ function chime() {
 function updateSound() {
   $("sound").setAttribute("aria-checked", String(sound));
   $("sound-options").hidden = !sound;
-  $("session-sound").setAttribute("aria-pressed", String(sound));
-  $("session-sound").textContent = sound ? "الصوت مفعّل" : "الصوت مغلق";
+  if (!sound) stopVoice();
   save("tawbah-sound", String(sound));
 }
 async function toggleSound() {
@@ -111,13 +154,14 @@ async function toggleSound() {
   }
 }
 $("sound").onclick = toggleSound;
-$("session-sound").onclick = toggleSound;
+
 $("preview-sound").onclick = async () => {
-  if (await unlockAudio()) chime();
+  if (await unlockAudio()) playVoice();
 };
 $("interval").onchange = (event) => {
   interval = Number(event.target.value);
   save("tawbah-interval", String(interval));
+  lastReminder = Math.floor(session.current(Date.now()) / (interval * 1000));
 };
 updateSound();
 let quoteIndex = Math.random() < 0.5 ? 0 : 1;
@@ -142,9 +186,13 @@ const quote =
         reference: "صحيح مسلم · ٢٧٠٢",
         url: "https://sunnah.com/muslim:2702b",
       };
-$("quote-label").textContent = quote.label;
+
 $("quote").textContent = quote.text;
-$("quote-source").textContent = quote.reference;
+$("quote-source").setAttribute(
+  "aria-label",
+  `${quote.label} · ${quote.reference}: ${quote.text}`,
+);
+$("quote-source").title = quote.reference;
 $("quote-source").href = quote.url;
 let ticker;
 let lastReminder = 0;
@@ -158,10 +206,16 @@ function render() {
     `${digits.format(Math.floor(session.remaining(now) / 60))}:${digits.format(session.remaining(now) % 60)}`;
   $("progress").value = session.progress(now);
   $("mountain").style.setProperty("--scale", session.scale(now));
+  $("mountain").style.setProperty(
+    "--width-scale",
+    1 - session.progress(now) * 0.16,
+  );
 }
 function complete(natural) {
   clearInterval(ticker);
   session.finish(Date.now());
+  stopVoice();
+  if (natural && sound) chime();
   render();
   $("active").hidden = true;
   $("done").hidden = false;
@@ -174,6 +228,7 @@ function complete(natural) {
   $("restart").focus({ preventScroll: true });
 }
 function tick() {
+  if (session.state !== "running") return;
   session.tick(Date.now());
   render();
   if (session.state === "done") {
@@ -186,7 +241,7 @@ function tick() {
     interval,
     lastReminder,
   );
-  if (reminder.due && sound && !document.hidden) chime();
+  if (reminder.due && sound && !document.hidden) playVoice();
   lastReminder = reminder.slot;
 }
 $("start").onclick = () => {
@@ -220,6 +275,7 @@ $("pause").onclick = () => {
   }
   if (session.state === "running") {
     session.pause(Date.now());
+    stopVoice();
     $("pause").textContent = "متابعة الجلسة";
     $("session-label").textContent = "خذ وقتك";
     document.body.dataset.state = "paused";
@@ -242,6 +298,7 @@ $("restart").onclick = () => {
   $("setup").inert = false;
   document.body.dataset.state = "idle";
   $("mountain").style.setProperty("--scale", 1);
+  $("mountain").style.setProperty("--width-scale", 1);
   $("eyebrow").textContent = "لحظاتٌ لذكر الله";
   $("subtitle").textContent = "اترك ما حولك قليلًا، وأقبل بقلبك.";
   $("start").focus({ preventScroll: true });
@@ -249,3 +306,21 @@ $("restart").onclick = () => {
 document.addEventListener("visibilitychange", () => {
   if (session.state === "running") tick();
 });
+
+const settings = $("settings");
+$("settings-open").onclick = () => settings.showModal();
+$("settings-close").onclick = () => settings.close();
+settings.addEventListener("click", (event) => {
+  if (event.target !== settings) return;
+  const rect = settings.getBoundingClientRect();
+  if (
+    event.clientX < rect.left ||
+    event.clientX > rect.right ||
+    event.clientY < rect.top ||
+    event.clientY > rect.bottom
+  )
+    settings.close();
+});
+settings.addEventListener("close", () =>
+  $("settings-open").focus({ preventScroll: true }),
+);

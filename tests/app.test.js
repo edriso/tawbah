@@ -26,12 +26,25 @@ function setup({
   let tick;
   w.Date.now = () => now;
   if (audioMock) w.AudioContext = audioMock;
+  w.fetch = async () => ({
+    ok: true,
+    arrayBuffer: async () => new ArrayBuffer(8),
+  });
+  w.HTMLDialogElement.prototype.showModal = function () {
+    this.open = true;
+  };
+  w.HTMLDialogElement.prototype.close = function () {
+    this.open = false;
+    this.dispatchEvent(new w.Event("close"));
+  };
   w.matchMedia = () => ({ matches: false, addEventListener() {} });
   w.setInterval = (callback) => {
     tick = callback;
     return 1;
   };
-  w.clearInterval = () => {};
+  w.clearInterval = () => {
+    tick = undefined;
+  };
   w.setTimeout = (callback) => {
     callback();
     return 1;
@@ -84,7 +97,7 @@ test("complete user flow: select duration, start, hide setup, pause, resume, fin
   get("start").click();
   app.advance(600000);
   assert.equal(get("done-label").textContent, "اكتملت جلستك");
-  assert.equal(get("mountain").style.getPropertyValue("--scale"), "0.62");
+  assert.equal(get("mountain").style.getPropertyValue("--scale"), "0.45");
   app.close();
 });
 test("theme and sound controls persist preferences; unavailable audio fails without blocking sessions", async () => {
@@ -103,8 +116,8 @@ test("theme and sound controls persist preferences; unavailable audio fails with
   assert.equal(w.localStorage.getItem("tawbah-interval"), "30");
   get("start").click();
   assert.equal(get("active").hidden, false);
-  get("session-sound").click();
-  assert.equal(get("session-sound").getAttribute("aria-pressed"), "false");
+  get("sound").click();
+  assert.equal(get("sound").getAttribute("aria-checked"), "false");
   app.close();
 });
 test("footer alternates on refresh and uses the exact verified verse", () => {
@@ -127,13 +140,31 @@ test("blocked storage does not prevent a complete session", () => {
   app.close();
 });
 
-test("enabled chimes respect the interval, mute, and pause", async () => {
+test("spoken reminders respect interval, mute and pause; only natural completion chimes", async () => {
   let tones = 0;
+  let voices = 0;
+  let stopped = 0;
   class AudioMock {
     state = "running";
     currentTime = 0;
     destination = {};
     async resume() {}
+    async decodeAudioData() {
+      return {};
+    }
+    createBufferSource() {
+      return {
+        buffer: null,
+        connect() {},
+        disconnect() {},
+        start() {
+          voices++;
+        },
+        stop() {
+          stopped++;
+        },
+      };
+    }
     createOscillator() {
       return {
         frequency: {},
@@ -158,24 +189,54 @@ test("enabled chimes respect the interval, mute, and pause", async () => {
     }
   }
   const app = setup({ audioMock: AudioMock });
+  const settle = () => new Promise((resolve) => setImmediate(resolve));
   app.get("sound").click();
-  await Promise.resolve();
+  await settle();
   app.get("start").click();
+  await settle();
   app.advance(19999);
-  assert.equal(tones, 0);
+  assert.equal(voices, 0);
   app.advance(1);
-  assert.equal(tones, 2);
+  assert.equal(voices, 1);
+  assert.equal(tones, 0);
   app.advance(250);
-  assert.equal(tones, 2);
+  assert.equal(voices, 1);
   app.get("pause").click();
+  assert.equal(stopped, 1);
   app.advance(60000);
-  assert.equal(tones, 2);
+  assert.equal(voices, 1);
   app.get("pause").click();
+  await settle();
   app.advance(20000);
-  assert.equal(tones, 4);
-  app.get("session-sound").click();
+  assert.equal(voices, 2);
+  app.get("sound").click();
   app.advance(20000);
-  assert.equal(tones, 4);
-  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(voices, 2);
+  app.get("sound").click();
+  await settle();
+  app.advance(300000);
+  assert.equal(tones, 2);
+  app.advance(500);
+  assert.equal(tones, 2);
+  app.get("restart").click();
+  app.get("start").click();
+  await settle();
+  app.get("finish").click();
+  assert.equal(tones, 2);
+  app.close();
+});
+test("settings opens and closes with focus returned; footer contains only the linked passage", () => {
+  const app = setup();
+  app.get("settings-open").click();
+  assert.equal(app.get("settings").open, true);
+  app.get("settings-close").click();
+  assert.equal(app.get("settings").open, false);
+  assert.equal(app.w.document.activeElement.id, "settings-open");
+  assert.equal(
+    app.w.document.querySelector("footer").textContent.trim(),
+    app.get("quote").textContent,
+  );
+  assert.equal(app.get("settings").contains(app.get("theme")), true);
+  assert.equal(app.get("settings").contains(app.get("sound")), true);
   app.close();
 });

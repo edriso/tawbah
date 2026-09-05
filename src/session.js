@@ -41,7 +41,7 @@ export class Session {
     return this.duration ? this.current(now) / this.duration : 0;
   }
   scale(now) {
-    return 1 - this.progress(now) * 0.38;
+    return Math.max(0.45, 1 - this.progress(now) * 0.55);
   }
   remaining(now) {
     return Math.max(0, Math.ceil((this.duration - this.current(now)) / 1000));

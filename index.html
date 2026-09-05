@@ -34,17 +34,29 @@
         >استغفر<span class="brand-dot" aria-hidden="true">.</span></a
       >
       <button
-        id="theme"
+        id="settings-open"
         class="icon-button"
-        aria-label="تفعيل المظهر الداكن"
-        title="تغيير المظهر"
-      ></button>
+        aria-label="الإعدادات"
+        aria-haspopup="dialog"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.4"
+          aria-hidden="true"
+        >
+          <path d="M4 7h16M4 17h16" />
+          <circle cx="9" cy="7" r="3" fill="var(--bg)" />
+          <circle cx="15" cy="17" r="3" fill="var(--bg)" />
+        </svg>
+      </button>
     </header>
     <main id="main">
       <div class="intro">
-        <p class="eyebrow" id="eyebrow">لحظاتٌ لذكر الله</p>
+        <p class="sr-only" id="eyebrow">لحظاتٌ لذكر الله</p>
         <h1>أستغفر الله<span>وأتوب إليه</span></h1>
-        <p class="subtitle" id="subtitle">اترك ما حولك قليلًا، وأقبل بقلبك.</p>
+        <p class="sr-only" id="subtitle">اترك ما حولك قليلًا، وأقبل بقلبك.</p>
       </div>
       <div class="landscape" aria-hidden="true">
         <div class="distant distant-right"></div>
@@ -85,32 +97,9 @@
               >
             </div>
           </fieldset>
-          <div class="sound-row">
-            <label class="sound-label" for="sound"
-              ><span id="sound-icon" aria-hidden="true"></span>تنبيه صوتي
-              لطيف</label
-            ><button
-              id="sound"
-              class="switch"
-              role="switch"
-              aria-checked="false"
-              aria-label="تنبيه صوتي لطيف"
-            >
-              <span></span>
-            </button>
-          </div>
-          <div id="sound-options" class="sound-options" hidden>
-            <label for="interval">كل</label
-            ><select id="interval" aria-label="الفاصل بين التنبيهات">
-              <option value="10">١٠ ثوانٍ</option>
-              <option value="20" selected>٢٠ ثانية</option>
-              <option value="30">٣٠ ثانية</option></select
-            ><button id="preview-sound" class="text-button">تجربة الصوت</button>
-          </div>
           <button id="start" class="primary">
             ابدأ الاستغفار <span aria-hidden="true">←</span>
           </button>
-          <p class="micro">على مَهْلِك، وبحضور قلبك.</p>
         </div>
         <div id="active" class="active" hidden>
           <p id="session-label" class="eyebrow">وقتٌ للذكر</p>
@@ -133,13 +122,6 @@
             <button id="pause" class="secondary">إيقاف مؤقت</button
             ><button id="finish" class="text-button">إنهاء الجلسة</button>
           </div>
-          <button
-            id="session-sound"
-            class="text-button session-sound"
-            aria-pressed="false"
-          >
-            الصوت مغلق
-          </button>
         </div>
         <div id="done" class="done" hidden>
           <p class="eyebrow" id="done-label">اكتملت جلستك</p>
@@ -150,30 +132,85 @@
           </button>
         </div>
         <p id="announcement" role="status" class="sr-only"></p>
-        <p id="audio-error" class="micro" role="status" hidden>
-          تعذّر تشغيل الصوت. يمكنك متابعة الجلسة بهدوء.
-        </p>
       </section>
     </main>
     <footer>
-      <div class="footer-rule"></div>
-      <p id="quote-label" class="eyebrow"></p>
-      <blockquote id="quote"></blockquote>
+      <blockquote>
+        <a id="quote-source" target="_blank" rel="noopener noreferrer"
+          ><span id="quote"></span
+        ></a>
+      </blockquote>
+    </footer>
+    <dialog id="settings" aria-labelledby="settings-title">
+      <div class="settings-heading">
+        <h2 id="settings-title">الإعدادات</h2>
+        <button
+          id="settings-close"
+          class="icon-button"
+          aria-label="إغلاق الإعدادات"
+        >
+          ×
+        </button>
+      </div>
+      <div class="setting-row">
+        <span>المظهر</span
+        ><button
+          id="theme"
+          class="icon-button"
+          aria-label="تفعيل المظهر الداكن"
+        ></button>
+      </div>
+      <div class="sound-row">
+        <label class="sound-label" for="sound"
+          ><span id="sound-icon" aria-hidden="true"></span>تذكير
+          بالاستغفار</label
+        ><button
+          id="sound"
+          class="switch"
+          role="switch"
+          aria-checked="false"
+          aria-label="تذكير بالاستغفار"
+        >
+          <span></span>
+        </button>
+      </div>
+      <div id="sound-options" class="sound-options" hidden>
+        <label for="interval">كل</label
+        ><select id="interval" aria-label="الفاصل بين التنبيهات">
+          <option value="10">١٠ ثوانٍ</option>
+          <option value="20" selected>٢٠ ثانية</option>
+          <option value="30">٣٠ ثانية</option></select
+        ><button id="preview-sound" class="text-button">تجربة الصوت</button>
+      </div>
+
+      <p id="audio-error" class="micro" role="status" hidden>
+        تعذّر تشغيل الصوت. يمكنك متابعة الجلسة بهدوء.
+      </p>
       <a
-        id="quote-source"
-        class="source"
+        class="settings-link"
+        href="https://github.com/edriso/tawbah"
         target="_blank"
         rel="noopener noreferrer"
-      ></a>
-      <div class="footer-bottom">
-        <span>واذكر ربّك</span
-        ><a
-          href="https://github.com/edriso/tawbah"
-          aria-label="المشروع على GitHub"
-          >مفتوح المصدر <span aria-hidden="true">↗</span></a
+        >المشروع على GitHub ↗</a
+      >
+      <p class="audio-credit">
+        الصوت:
+        <a
+          href="https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg"
+          target="_blank"
+          rel="noopener noreferrer"
+          >ArabicAudios</a
         >
-      </div>
-    </footer>
+        ·
+        <a
+          href="https://creativecommons.org/licenses/by-sa/3.0/"
+          target="_blank"
+          rel="noopener noreferrer"
+          >CC BY-SA 3.0</a
+        >
+      </p>
+    </dialog>
+    <audio id="voice-file" src="/istighfar.mp3" preload="none" hidden></audio>
     <noscript>يرجى تفعيل JavaScript لتشغيل جلسة الاستغفار.</noscript>
     <script type="module" src="/src/main.js"></script>
   </body>

@@ -8,7 +8,7 @@ test("wall-clock time catches up after background throttling, completes once, an
   s.tick(601000);
   assert.equal(s.state, "done");
   assert.equal(s.remaining(601000), 0);
-  assert.equal(s.scale(601000), 0.62);
+  assert.equal(s.scale(601000), 0.45);
   assert.equal(s.progress(601000), 1);
   s.tick(901000);
   assert.equal(s.elapsed, 300000);
