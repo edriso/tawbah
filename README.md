@@ -9,7 +9,7 @@ A quiet Arabic app for istighfar (seeking forgiveness).
 ## Features
 
 - Sessions of 5, 10, 15, or 30 minutes, with pause, resume, and early finish.
-- A mountain that gradually recedes, keeping a visible peak at the end.
+- A full-page mountain scene behind the remembrance text. The central mountain starts large on phones and desktops and gradually recedes, keeping a visible peak at the end. A subtle overlay keeps text and controls readable.
 - A full-height layout for phones and desktops, with light and dark themes.
 - Optional spoken reminders every 10, 20, or 30 seconds. Choose the default Bader Alnufais recording (one complete repetition of “أستغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه”) or the original short “أستغفر الله” recording. The choice is saved; recordings never overlap.
 - A separate, optional four-note chime when the timer finishes. Both sounds have preview buttons in settings. Ending a session early does not play the chime.
