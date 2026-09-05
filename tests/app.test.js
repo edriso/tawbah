@@ -287,3 +287,64 @@ test("settings opens and closes with focus returned; passage attribution and rep
   assert.equal(app.get("settings").contains(app.get("sound")), true);
   app.close();
 });
+
+test("voice defaults to Bader, switches and caches recordings, and never overlaps repetitions", async () => {
+  const played = [];
+  const fetched = [];
+  let stopped = 0;
+  class AudioMock {
+    state = "running";
+    destination = {};
+    async resume() {}
+    async decodeAudioData(buffer) {
+      return buffer;
+    }
+    createGain() {
+      return { gain: {}, connect() {}, disconnect() {} };
+    }
+    createBufferSource() {
+      return {
+        buffer: null,
+        connect() {},
+        disconnect() {},
+        start() {
+          played.push(this.buffer);
+        },
+        stop() {
+          stopped++;
+        },
+      };
+    }
+  }
+  const app = setup({ audioMock: AudioMock });
+  const settle = () => new Promise((resolve) => setImmediate(resolve));
+  app.w.fetch = async (url) => {
+    fetched.push(url);
+    return { ok: true, arrayBuffer: async () => url };
+  };
+  assert.equal(app.get("voice").value, "bader");
+  app.get("sound").click();
+  await settle();
+  app.get("start").click();
+  await settle();
+  app.advance(20000);
+  assert.ok(played[0].endsWith("/istighfar-bader.mp3"));
+  app.advance(20000);
+  assert.equal(played.length, 1);
+  app.get("voice").value = "short";
+  app.get("voice").dispatchEvent(new app.w.Event("change"));
+  await settle();
+  assert.equal(stopped, 1);
+  assert.equal(app.w.localStorage.getItem("tawbah-voice"), "short");
+  app.get("preview-sound").click();
+  await settle();
+  assert.ok(played[1].endsWith("/istighfar.mp3"));
+  app.get("voice").value = "bader";
+  app.get("voice").dispatchEvent(new app.w.Event("change"));
+  await settle();
+  app.get("preview-sound").click();
+  await settle();
+  assert.ok(played[2].endsWith("/istighfar-bader.mp3"));
+  assert.equal(fetched.length, 2);
+  app.close();
+});

@@ -21,3 +21,10 @@ Source: https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg
 License: https://creativecommons.org/licenses/by-sa/3.0/
 public/istighfar.mp3 is Wikimedia's MP3 transcode of the original recording;
 no content changes. The recording retains CC BY-SA 3.0, separately from app code.
+
+Default spoken reminder: attributed to Bader Alnufais by the selected upload.
+Source: https://www.youtube.com/watch?v=mjf4K7aVuUc (channel: هدوء قلبي).
+public/istighfar-bader.mp3 contains one repetition, extracted from 00:00.350
+to 00:07.650, with short edge fades and MP3 transcoding.
+The source does not state a reuse license. Recording rights remain with the
+respective rights holders; the app's MIT license does not cover this recording.

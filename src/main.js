@@ -68,8 +68,16 @@ if (["5", "10", "15", "30"].includes(duration))
   document.querySelector(`input[value="${duration}"]`).checked = true;
 $("interval").value = interval;
 let audio;
-let voiceBuffer;
-let voiceLoading;
+let voiceChoice = read("tawbah-voice") === "short" ? "short" : "bader";
+const voiceBuffers = new Map();
+const voiceLoads = new Map();
+const voiceFiles = { bader: $("voice-bader").src, short: $("voice-file").src };
+function updateVoiceChoice() {
+  $("voice").value = voiceChoice;
+  $("credit-short").hidden = voiceChoice !== "short";
+  $("credit-bader").hidden = voiceChoice !== "bader";
+}
+updateVoiceChoice();
 let voiceNode;
 function stopVoice() {
   if (voiceNode) {
@@ -78,22 +86,29 @@ function stopVoice() {
   }
 }
 function loadVoice() {
-  voiceLoading ??= fetch($("voice-file").src)
-    .then((response) => {
-      if (!response.ok) throw new Error("Audio unavailable");
-      return response.arrayBuffer();
-    })
-    .then((buffer) => audio.decodeAudioData(buffer))
-    .then((buffer) => {
-      voiceBuffer = buffer;
-    })
-    .catch((error) => {
-      voiceLoading = null;
-      throw error;
-    });
-  return voiceLoading;
+  const choice = voiceChoice;
+  if (voiceBuffers.has(choice)) return Promise.resolve();
+  if (!voiceLoads.has(choice)) {
+    const loading = fetch(voiceFiles[choice])
+      .then((response) => {
+        if (!response.ok) throw new Error("Audio unavailable");
+        return response.arrayBuffer();
+      })
+      .then((buffer) => audio.decodeAudioData(buffer))
+      .then((buffer) => {
+        voiceBuffers.set(choice, buffer);
+      })
+      .catch((error) => {
+        voiceLoads.delete(choice);
+        throw error;
+      });
+    voiceLoads.set(choice, loading);
+  }
+  return voiceLoads.get(choice);
 }
 function playVoice() {
+  const voiceBuffer = voiceBuffers.get(voiceChoice);
+  if (voiceNode) return;
   if (!voiceBuffer || !audio || audio.state !== "running") return;
   stopVoice();
   const node = audio.createBufferSource();
@@ -170,7 +185,15 @@ $("preview-chime").onclick = async () => {
   if (await unlockAudio(false)) chime();
 };
 
+$("voice").onchange = async (event) => {
+  stopVoice();
+  voiceChoice = event.target.value === "short" ? "short" : "bader";
+  save("tawbah-voice", voiceChoice);
+  updateVoiceChoice();
+  if (sound) await unlockAudio();
+};
 $("preview-sound").onclick = async () => {
+  stopVoice();
   if (await unlockAudio()) playVoice();
 };
 $("interval").onchange = (event) => {

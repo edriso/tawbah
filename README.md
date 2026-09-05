@@ -11,7 +11,7 @@ A quiet Arabic app for istighfar (seeking forgiveness).
 - Sessions of 5, 10, 15, or 30 minutes, with pause, resume, and early finish.
 - A mountain that gradually recedes, keeping a visible peak at the end.
 - A full-height layout for phones and desktops, with light and dark themes.
-- Optional spoken “أستغفر الله” reminders every 10, 20, or 30 seconds.
+- Optional spoken reminders every 10, 20, or 30 seconds. Choose the default Bader Alnufais recording (one complete repetition of “أستغفر الله العظيم الذي لا إله إلا هو الحي القيوم وأتوب إليه”) or the original short “أستغفر الله” recording. The choice is saved; recordings never overlap.
 - A separate, optional four-note chime when the timer finishes. Both sounds have preview buttons in settings. Ending a session early does not play the chime.
 - A footer that alternates between Quran 3:135, framed by ﴿ ﴾ with its surah reference, and Sahih Muslim 2702b, with the narrator and collection shown.
 - Keyboard controls and support for reduced motion. No accounts or analytics.
@@ -46,7 +46,8 @@ The build verifies the complete Tanzil Uthmani corpus using SHA-256, then extrac
 
 - [Quran 3:135 — Tanzil](https://tanzil.net/#3:135)
 - [Sahih Muslim 2702b](https://sunnah.com/muslim:2702b)
-- [Spoken reminder by ArabicAudios](https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg), licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The app uses Wikimedia's MP3 transcode, with no content changes.
+- [Default recording, attributed to Bader Alnufais](https://www.youtube.com/watch?v=mjf4K7aVuUc): a single repetition trimmed from the selected video, with short fades at the edges. The recording is separate from the MIT-licensed code; see NOTICE.
+- [Short spoken reminder by ArabicAudios](https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg), licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The app uses Wikimedia's MP3 transcode, with no content changes.
 
 ## Deployment
 

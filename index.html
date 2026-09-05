@@ -179,6 +179,13 @@
           <span></span>
         </button>
       </div>
+      <div class="setting-row">
+        <label for="voice">صوت الاستغفار</label>
+        <select id="voice">
+          <option value="bader">بدر النفيس</option>
+          <option value="short">الصوت القصير</option>
+        </select>
+      </div>
       <div id="sound-options" class="sound-options" hidden>
         <label for="interval">كل</label
         ><select id="interval" aria-label="الفاصل بين التنبيهات">
@@ -213,7 +220,7 @@
         rel="noopener noreferrer"
         >المشروع على GitHub ↗</a
       >
-      <p class="audio-credit">
+      <p class="audio-credit" id="credit-short" hidden>
         الصوت:
         <a
           href="https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg"
@@ -229,7 +236,22 @@
           >CC BY-SA 3.0</a
         >
       </p>
+      <p class="audio-credit" id="credit-bader">
+        الصوت:
+        <a
+          href="https://www.youtube.com/watch?v=mjf4K7aVuUc"
+          target="_blank"
+          rel="noopener noreferrer"
+          >بدر النفيس · المصدر</a
+        >
+      </p>
     </dialog>
+    <audio
+      id="voice-bader"
+      src="/istighfar-bader.mp3"
+      preload="none"
+      hidden
+    ></audio>
     <audio id="voice-file" src="/istighfar.mp3" preload="none" hidden></audio>
     <noscript>يرجى تفعيل JavaScript لتشغيل جلسة الاستغفار.</noscript>
     <script type="module" src="/src/main.js"></script>
