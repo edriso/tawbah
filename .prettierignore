@@ -1,0 +1,6 @@
+data/
+dist/
+node_modules/
+public/
+src/ayah.json
+package-lock.json

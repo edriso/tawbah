@@ -1,0 +1,17 @@
+Application code: MIT, matching edriso/zola.
+
+Quran text: Copyright Tanzil Project, https://tanzil.net/ (CC BY 3.0).
+Verbatim distribution is permitted; changing the Quran text is not permitted.
+Attribution and these terms must accompany redistributed copies.
+https://tanzil.net/docs/Text_License
+The full source corpus, including its original copyright notice, is preserved
+in data/quran-uthmani.txt, copied byte-for-byte from edriso/learn-tajweed.
+Only verse 3:135 is shipped to the browser, unmodified and linked to Tanzil.
+
+Amiri font: SIL Open Font License 1.1. See public/FONT-LICENSE.txt.
+Source: https://github.com/google/fonts/tree/main/ofl/amiri
+
+Hadith: Sahih Muslim 2702b. Arabic wording checked against
+https://sunnah.com/muslim:2702b
+
+Mountain artwork: original AI-generated artwork created for this project.

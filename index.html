@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fafbfc" />
+    <meta
+      name="description"
+      content="استغفر — لحظات هادئة لذكر الله. اختر وقتك، واترك ما حولك قليلًا، واستغفر."
+    />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>استغفر — لحظات لذكر الله</title>
+    <script>
+      try {
+        const t = localStorage.getItem("tawbah-theme");
+        document.documentElement.dataset.theme =
+          t === "dark" || t === "light"
+            ? t
+            : matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+      } catch {
+        document.documentElement.dataset.theme = matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches
+          ? "dark"
+          : "light";
+      }
+    </script>
+  </head>
+  <body>
+    <header class="header">
+      <a class="wordmark" href="./" aria-label="استغفر — الصفحة الرئيسية"
+        >استغفر<span class="brand-dot" aria-hidden="true">.</span></a
+      >
+      <button
+        id="theme"
+        class="icon-button"
+        aria-label="تفعيل المظهر الداكن"
+        title="تغيير المظهر"
+      ></button>
+    </header>
+    <main id="main">
+      <div class="intro">
+        <p class="eyebrow" id="eyebrow">لحظاتٌ لذكر الله</p>
+        <h1>أستغفر الله<span>وأتوب إليه</span></h1>
+        <p class="subtitle" id="subtitle">اترك ما حولك قليلًا، وأقبل بقلبك.</p>
+      </div>
+      <div class="landscape" aria-hidden="true">
+        <div class="distant distant-right"></div>
+        <div class="distant distant-left"></div>
+        <img
+          id="mountain"
+          src="/mountain.webp"
+          width="1536"
+          height="1024"
+          alt=""
+          fetchpriority="high"
+        />
+      </div>
+      <section class="session" aria-label="جلسة الاستغفار">
+        <div id="setup" class="setup">
+          <fieldset>
+            <legend>كم من الوقت تُحب أن تمكث؟</legend>
+            <div class="choices" id="durations">
+              <label
+                ><input type="radio" name="duration" value="5" checked /><span
+                  >٥ دقائق</span
+                ></label
+              >
+              <label
+                ><input type="radio" name="duration" value="10" /><span
+                  >١٠ دقائق</span
+                ></label
+              >
+              <label
+                ><input type="radio" name="duration" value="15" /><span
+                  >١٥ دقيقة</span
+                ></label
+              >
+              <label
+                ><input type="radio" name="duration" value="30" /><span
+                  >٣٠ دقيقة</span
+                ></label
+              >
+            </div>
+          </fieldset>
+          <div class="sound-row">
+            <label class="sound-label" for="sound"
+              ><span id="sound-icon" aria-hidden="true"></span>تنبيه صوتي
+              لطيف</label
+            ><button
+              id="sound"
+              class="switch"
+              role="switch"
+              aria-checked="false"
+              aria-label="تنبيه صوتي لطيف"
+            >
+              <span></span>
+            </button>
+          </div>
+          <div id="sound-options" class="sound-options" hidden>
+            <label for="interval">كل</label
+            ><select id="interval" aria-label="الفاصل بين التنبيهات">
+              <option value="10">١٠ ثوانٍ</option>
+              <option value="20" selected>٢٠ ثانية</option>
+              <option value="30">٣٠ ثانية</option></select
+            ><button id="preview-sound" class="text-button">تجربة الصوت</button>
+          </div>
+          <button id="start" class="primary">
+            ابدأ الاستغفار <span aria-hidden="true">←</span>
+          </button>
+          <p class="micro">على مَهْلِك، وبحضور قلبك.</p>
+        </div>
+        <div id="active" class="active" hidden>
+          <p id="session-label" class="eyebrow">وقتٌ للذكر</p>
+          <div
+            id="timer"
+            class="timer"
+            role="timer"
+            aria-label="الوقت المتبقي"
+            dir="ltr"
+          >
+            ٠٥:٠٠
+          </div>
+          <progress
+            id="progress"
+            max="1"
+            value="0"
+            aria-label="تقدم الجلسة"
+          ></progress>
+          <div class="session-actions">
+            <button id="pause" class="secondary">إيقاف مؤقت</button
+            ><button id="finish" class="text-button">إنهاء الجلسة</button>
+          </div>
+          <button
+            id="session-sound"
+            class="text-button session-sound"
+            aria-pressed="false"
+          >
+            الصوت مغلق
+          </button>
+        </div>
+        <div id="done" class="done" hidden>
+          <p class="eyebrow" id="done-label">اكتملت جلستك</p>
+          <h2>تقبّل الله منك</h2>
+          <p>يبقى بابُه مفتوحًا، ويستمرّ الذكر.</p>
+          <button id="restart" class="primary">
+            جلسة أخرى <span aria-hidden="true">←</span>
+          </button>
+        </div>
+        <p id="announcement" role="status" class="sr-only"></p>
+        <p id="audio-error" class="micro" role="status" hidden>
+          تعذّر تشغيل الصوت. يمكنك متابعة الجلسة بهدوء.
+        </p>
+      </section>
+    </main>
+    <footer>
+      <div class="footer-rule"></div>
+      <p id="quote-label" class="eyebrow"></p>
+      <blockquote id="quote"></blockquote>
+      <a
+        id="quote-source"
+        class="source"
+        target="_blank"
+        rel="noopener noreferrer"
+      ></a>
+      <div class="footer-bottom">
+        <span>واذكر ربّك</span
+        ><a
+          href="https://github.com/edriso/tawbah"
+          aria-label="المشروع على GitHub"
+          >مفتوح المصدر <span aria-hidden="true">↗</span></a
+        >
+      </div>
+    </footer>
+    <noscript>يرجى تفعيل JavaScript لتشغيل جلسة الاستغفار.</noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
