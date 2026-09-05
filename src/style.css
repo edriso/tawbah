@@ -157,6 +157,7 @@ h1 span {
   max-width: 1100px;
   overflow: hidden;
   isolation: isolate;
+  background: var(--bg);
   pointer-events: none;
 }
 .landscape img {
