@@ -1,48 +1,57 @@
-# استغفر
+# توبة · Tawbah
 
-مساحة هادئة لذكر الله والاستغفار. اختر وقتك، واترك ما حولك قليلًا.
+مساحة هادئة للاستغفار. اختر مدة الجلسة وابدأ. من الإعدادات يمكنك تغيير المظهر، وتفعيل التذكير الصوتي أو نغمة نهاية الجلسة، وتجربة كل صوت.
 
-**[افتح التطبيق](https://edriso.github.io/tawbah/)**
+A quiet Arabic app for istighfar (seeking forgiveness).
 
-واجهة عربية باتجاه RTL، ومساحات واسعة، وجبال هادئة. اختر جلسة من ٥ أو ١٠ أو ١٥ أو ٣٠ دقيقة؛ تتوارى الإعدادات عند البدء، ويصغر الجبل تدريجيًا مع مرور الوقت دون أن يختفي. يمكنك إيقاف الجلسة مؤقتًا، أو متابعتها، أو إنهاؤها مبكرًا.
+**[Open Tawbah](https://edriso.github.io/tawbah/)**
 
-- مظهر فاتح وداكن، يبدأ حسب إعداد الجهاز ويحفظ اختيارك.
-- تسجيل بشري لعبارة «أستغفر الله» كل ١٠ أو ٢٠ أو ٣٠ ثانية، مع تجربة الصوت وكتمه من الإعدادات. نغمة لطيفة عند اكتمال الجلسة إذا كان الصوت مفعّلًا.
-- آية آل عمران ١٣٥ أو حديث صحيح مسلم ٢٧٠٢، بالتناوب عند إعادة تحميل الصفحة.
-- واجهة تملأ ارتفاع الشاشة، مع لوحة إعدادات للمظهر والصوت ورابط المشروع، وتذييل لا يعرض إلا الآية أو الحديث. تصميم للهواتف والحواسيب، وتنقّل بلوحة المفاتيح، واحترام تقليل الحركة.
-- بلا حسابات، أو تحليلات، أو خدمات خارجية أثناء الجلسة. الخط والصورة محليّان.
+## Features
 
-يتناقص الجبل من قاعدته الثابتة، ويبقى منه ٤٥٪ من ارتفاعه في نهاية الجلسة. هو صورة رمزية لتخفيف حمل الذنوب بالاستغفار، دون عدّ للذنوب أو قياس للمغفرة. قد يوقف المتصفح الصوت عند قفل الهاتف أو وضع الصفحة في الخلفية؛ يبقى المؤقّت محسوبًا من الوقت المنقضي، ولا تتراكم التنبيهات الفائتة. إعادة تحميل الصفحة تبدأ جلسة جديدة.
+- Sessions of 5, 10, 15, or 30 minutes, with pause, resume, and early finish.
+- A mountain that gradually recedes, keeping a visible peak at the end.
+- A full-height layout for phones and desktops, with light and dark themes.
+- Optional spoken “أستغفر الله” reminders every 10, 20, or 30 seconds.
+- A separate, optional four-note chime when the timer finishes. Both sounds have preview buttons in settings. Ending a session early does not play the chime.
+- A footer that alternates between Quran 3:135 and Sahih Muslim 2702b on refresh.
+- Keyboard controls and support for reduced motion. No accounts or analytics.
 
-## Development
+Settings are saved on your device when storage is available. Audio, fonts, and images are hosted with the app. Refreshing starts a new session. Browsers may suspend audio when the phone is locked or the page is in the background; the timer still catches up, without replaying missed reminders.
 
-Node.js 22+ and npm:
+The mountain is symbolic, not a count of sins or a measure of forgiveness. It keeps 45% of its original height at the end of a session.
+
+## Run locally
+
+Use Node.js 22+ and npm:
 
 ```sh
 npm ci
 npm run dev
-npm test
-npm run build
-npm run preview
 ```
 
-Vite serves the app at `/tawbah/`. Vanilla JavaScript and CSS keep the production app small. No framework or runtime dependencies. Settings use localStorage when available; sessions stay in memory. Footer selection uses sessionStorage and falls back to a random choice when storage is blocked.
+Open the local URL at `/tawbah/`.
 
-`npm test` covers elapsed-time accounting, pauses, completion, reminder boundaries, and DOM interactions. `npm run build` verifies the Quran corpus before producing `dist/`.
+```sh
+npm test              # Session and interaction tests
+npm run build        # Verify Quran text and build into dist/
+npm run preview      # Preview the production build
+npm run format:check # Check formatting
+```
 
-## Quran text and sources
+Built with vanilla JavaScript, CSS, and Vite. No runtime dependencies or backend.
 
-Following [learn-tajweed's verification approach](https://github.com/edriso/learn-tajweed/blob/main/docs/quran-pipeline.md), `scripts/quran.mjs` checks the complete Tanzil Uthmani corpus against SHA-256 `7f30c647331a61100ebf24a80507dc0fcdd9f2df97f1312b5b2dfcb982a7f326`, then extracts 3:135 without changing any characters. A mismatch stops the build. The browser receives only the selected verse.
+## Text and audio sources
+
+The build verifies the complete Tanzil Uthmani corpus using SHA-256, then extracts verse 3:135 without changing its text. A mismatch stops the build. Only the selected verse is sent to the browser. See `scripts/quran.mjs`.
 
 - [Quran 3:135 — Tanzil](https://tanzil.net/#3:135)
 - [Sahih Muslim 2702b](https://sunnah.com/muslim:2702b)
+- [Spoken reminder by ArabicAudios](https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg), licensed under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). The app uses Wikimedia's MP3 transcode, with no content changes.
 
 ## Deployment
 
-`.github/workflows/pages.yml` installs the locked dependencies, runs tests and the verified production build, uploads `dist/`, and deploys to GitHub Pages on pushes to `main`. Pull requests run checks without deploying. Repository Pages must use **GitHub Actions** as its source. No tokens or secrets need to be committed.
+Pushes to `main` run tests, build the app, and deploy to GitHub Pages through `.github/workflows/pages.yml`. Pull requests run checks without deploying. Set the repository's Pages source to **GitHub Actions**.
 
 ## License
 
-MIT, matching [Zola](https://github.com/edriso/zola). Third-party Quran text and fonts retain their licenses; see [NOTICE](NOTICE).
-
-Spoken reminder: [ArabicAudios on Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Ar-أستغفر_الله.ogg), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/). Locally hosted MP3 transcode; no synthesized voice. See NOTICE.
+App code: [MIT](LICENSE). Quran text, the spoken recording, and the font retain their own licenses; see [NOTICE](NOTICE).

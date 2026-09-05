@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "license": "MIT",
-  "description": "استغفر — مساحة عربية هادئة للاستغفار، بجلسات مؤقتة وجبال تتلاشى برفق.",
+  "description": "توبة — مساحة هادئة للاستغفار، مع جلسات مؤقتة وتذكير صوتي اختياري.",
   "scripts": {
     "dev": "node scripts/quran.mjs && vite --host 127.0.0.1",
     "build": "node scripts/quran.mjs && vite build",

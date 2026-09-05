@@ -56,6 +56,10 @@ matchMedia("(prefers-color-scheme: dark)").addEventListener(
 updateTheme();
 $("sound-icon").innerHTML = icons.sound;
 let sound = read("tawbah-sound") === "true";
+let completionSound =
+  read("tawbah-completion-sound") === null
+    ? sound
+    : read("tawbah-completion-sound") === "true";
 let interval = [10, 20, 30].includes(Number(read("tawbah-interval")))
   ? Number(read("tawbah-interval"))
   : 20;
@@ -107,11 +111,11 @@ function playVoice() {
   node.start();
 }
 
-async function unlockAudio() {
+async function unlockAudio(withVoice = true) {
   try {
     audio ??= new (window.AudioContext || window.webkitAudioContext)();
     await audio.resume();
-    await loadVoice();
+    if (withVoice) await loadVoice();
     $("audio-error").hidden = audio.state === "running";
     return audio.state === "running";
   } catch {
@@ -122,17 +126,18 @@ async function unlockAudio() {
 function chime() {
   if (!audio || audio.state !== "running") return;
   const now = audio.currentTime;
-  [660, 990].forEach((frequency, index) => {
+  [523.25, 659.25, 783.99, 1046.5].forEach((frequency, index) => {
+    const start = now + index * 0.13;
     const oscillator = audio.createOscillator();
     const gain = audio.createGain();
     oscillator.frequency.value = frequency;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(index ? 0.025 : 0.07, now + 0.025);
-    gain.gain.exponentialRampToValueAtTime(0.0001, now + 1.4);
+    gain.gain.setValueAtTime(0, start);
+    gain.gain.linearRampToValueAtTime(0.065, start + 0.03);
+    gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.8);
     oscillator.connect(gain);
     gain.connect(audio.destination);
-    oscillator.start(now);
-    oscillator.stop(now + 1.5);
+    oscillator.start(start);
+    oscillator.stop(start + 0.9);
     oscillator.onended = () => {
       oscillator.disconnect();
       gain.disconnect();
@@ -154,6 +159,16 @@ async function toggleSound() {
   }
 }
 $("sound").onclick = toggleSound;
+$("completion-sound").setAttribute("aria-checked", String(completionSound));
+$("completion-sound").onclick = () => {
+  completionSound = !completionSound;
+  $("completion-sound").setAttribute("aria-checked", String(completionSound));
+  save("tawbah-completion-sound", String(completionSound));
+  if (completionSound) void unlockAudio(false);
+};
+$("preview-chime").onclick = async () => {
+  if (await unlockAudio(false)) chime();
+};
 
 $("preview-sound").onclick = async () => {
   if (await unlockAudio()) playVoice();
@@ -215,7 +230,7 @@ function complete(natural) {
   clearInterval(ticker);
   session.finish(Date.now());
   stopVoice();
-  if (natural && sound) chime();
+  if (natural && completionSound) chime();
   render();
   $("active").hidden = true;
   $("done").hidden = false;
@@ -245,7 +260,7 @@ function tick() {
   lastReminder = reminder.slot;
 }
 $("start").onclick = () => {
-  if (sound) void unlockAudio();
+  if (sound || completionSound) void unlockAudio(sound);
   const minutes = Number(
     document.querySelector('input[name="duration"]:checked').value,
   );
@@ -256,7 +271,7 @@ $("start").onclick = () => {
   $("setup").inert = true;
   $("active").hidden = false;
   $("pause").textContent = "إيقاف مؤقت";
-  $("session-label").textContent = "وقتٌ للذكر";
+  $("session-label").textContent = "وقت للذكر";
   $("eyebrow").textContent = "أقبل بقلبك";
   $("subtitle").textContent = "أستغفر الله، وأتوب إليه.";
   transitionTimer = setTimeout(() => {
@@ -277,14 +292,14 @@ $("pause").onclick = () => {
     session.pause(Date.now());
     stopVoice();
     $("pause").textContent = "متابعة الجلسة";
-    $("session-label").textContent = "خذ وقتك";
+    $("session-label").textContent = "الجلسة متوقفة";
     document.body.dataset.state = "paused";
     announce("الجلسة متوقفة مؤقتًا");
   } else {
-    if (sound) void unlockAudio();
+    if (sound || completionSound) void unlockAudio(sound);
     session.resume(Date.now());
     $("pause").textContent = "إيقاف مؤقت";
-    $("session-label").textContent = "وقتٌ للذكر";
+    $("session-label").textContent = "وقت للذكر";
     document.body.dataset.state = "running";
     announce("استؤنفت الجلسة");
   }

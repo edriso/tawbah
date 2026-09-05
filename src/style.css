@@ -105,10 +105,7 @@ button:active {
   font-size: 29px;
   line-height: 1;
 }
-.brand-dot {
-  color: var(--muted);
-  padding-inline-start: 3px;
-}
+
 .icon-button {
   height: 44px;
   width: 44px;

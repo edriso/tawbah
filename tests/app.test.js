@@ -214,19 +214,49 @@ test("spoken reminders respect interval, mute and pause; only natural completion
   assert.equal(voices, 2);
   app.get("sound").click();
   await settle();
+  app.get("completion-sound").click();
+  await settle();
   app.advance(300000);
-  assert.equal(tones, 2);
+  assert.equal(tones, 4);
   app.advance(500);
-  assert.equal(tones, 2);
+  assert.equal(tones, 4);
   app.get("restart").click();
   app.get("start").click();
   await settle();
   app.get("finish").click();
-  assert.equal(tones, 2);
+  assert.equal(tones, 4);
+  // The end chime works without spoken reminders or fetching the recording.
+  app.get("sound").click();
+  app.w.fetch = async () => {
+    throw new Error("Voice download unavailable");
+  };
+  app.get("restart").click();
+  app.get("start").click();
+  await settle();
+  app.advance(300000);
+  assert.equal(tones, 8);
+  app.get("completion-sound").click();
+  assert.equal(app.w.localStorage.getItem("tawbah-completion-sound"), "false");
+  app.get("restart").click();
+  app.get("start").click();
+  await settle();
+  app.advance(300000);
+  assert.equal(tones, 8);
+  app.get("preview-chime").click();
+  await settle();
+  assert.equal(tones, 12);
+  assert.equal(
+    app.get("completion-sound").getAttribute("aria-checked"),
+    "false",
+  );
   app.close();
 });
 test("settings opens and closes with focus returned; footer contains only the linked passage", () => {
   const app = setup();
+  assert.equal(
+    app.w.document.querySelector(".wordmark").textContent.trim(),
+    "توبة",
+  );
   app.get("settings-open").click();
   assert.equal(app.get("settings").open, true);
   app.get("settings-close").click();

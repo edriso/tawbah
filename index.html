@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#fafbfc" />
     <meta
       name="description"
-      content="استغفر — لحظات هادئة لذكر الله. اختر وقتك، واترك ما حولك قليلًا، واستغفر."
+      content="توبة — مساحة هادئة للاستغفار، مع جلسات مؤقتة وتذكير صوتي اختياري."
     />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <title>استغفر — لحظات لذكر الله</title>
+    <title>توبة — مساحة للاستغفار</title>
     <script>
       try {
         const t = localStorage.getItem("tawbah-theme");
@@ -30,9 +30,7 @@
   </head>
   <body>
     <header class="header">
-      <a class="wordmark" href="./" aria-label="استغفر — الصفحة الرئيسية"
-        >استغفر<span class="brand-dot" aria-hidden="true">.</span></a
-      >
+      <a class="wordmark" href="./" aria-label="توبة — الصفحة الرئيسية">توبة</a>
       <button
         id="settings-open"
         class="icon-button"
@@ -73,7 +71,7 @@
       <section class="session" aria-label="جلسة الاستغفار">
         <div id="setup" class="setup">
           <fieldset>
-            <legend>كم من الوقت تُحب أن تمكث؟</legend>
+            <legend>مدة الجلسة</legend>
             <div class="choices" id="durations">
               <label
                 ><input type="radio" name="duration" value="5" checked /><span
@@ -102,7 +100,7 @@
           </button>
         </div>
         <div id="active" class="active" hidden>
-          <p id="session-label" class="eyebrow">وقتٌ للذكر</p>
+          <p id="session-label" class="eyebrow">وقت للذكر</p>
           <div
             id="timer"
             class="timer"
@@ -126,9 +124,8 @@
         <div id="done" class="done" hidden>
           <p class="eyebrow" id="done-label">اكتملت جلستك</p>
           <h2>تقبّل الله منك</h2>
-          <p>يبقى بابُه مفتوحًا، ويستمرّ الذكر.</p>
           <button id="restart" class="primary">
-            جلسة أخرى <span aria-hidden="true">←</span>
+            جلسة جديدة <span aria-hidden="true">←</span>
           </button>
         </div>
         <p id="announcement" role="status" class="sr-only"></p>
@@ -183,6 +180,21 @@
         ><button id="preview-sound" class="text-button">تجربة الصوت</button>
       </div>
 
+      <div class="sound-row">
+        <label class="sound-label" for="completion-sound"
+          >نغمة نهاية الجلسة</label
+        >
+        <button
+          id="completion-sound"
+          class="switch"
+          role="switch"
+          aria-checked="false"
+          aria-label="نغمة نهاية الجلسة"
+        >
+          <span></span>
+        </button>
+      </div>
+      <button id="preview-chime" class="text-button">تجربة النغمة</button>
       <p id="audio-error" class="micro" role="status" hidden>
         تعذّر تشغيل الصوت. يمكنك متابعة الجلسة بهدوء.
       </p>
